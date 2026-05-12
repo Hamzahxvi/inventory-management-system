@@ -28,20 +28,10 @@ A full-stack inventory management system built with Laravel, Vue, React/Inertia,
 
 ## Screenshots
 
-Add screenshots after pushing to GitHub, for example:
-
-- Dashboard
-- Products list
-- Product details and stock movements
-- Reports
-
-Recommended folder:
-
-```text
-docs/screenshots/
-```
-
-Then reference them in this README with Markdown image links.
+![Dashboard](docs/screenshots/dashboard.jpeg)
+![Products list](docs/screenshots/products.jpeg)
+![Product details and stock movements](docs/screenshots/products.jpeg)
+![Reports](docs/screenshots/reports.jpeg)
 
 ## Local Setup
 

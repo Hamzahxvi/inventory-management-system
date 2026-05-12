@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
 import axios from 'axios';
+import { defineStore } from 'pinia';
 import type { Product, PaginatedResponse } from '@/types/inventory';
 
 interface ProductFilters {
@@ -44,6 +44,7 @@ export const useProductStore = defineStore('products', {
     actions: {
         async fetchProducts(page = 1) {
             this.loading = true;
+
             try {
                 const params: Record<string, string | number | boolean> = {
                     page,
@@ -51,12 +52,27 @@ export const useProductStore = defineStore('products', {
                     sort: this.filters.sort,
                     direction: this.filters.direction,
                 };
-                if (this.filters.search) params.search = this.filters.search;
-                if (this.filters.category_id) params.category_id = this.filters.category_id;
-                if (this.filters.supplier_id) params.supplier_id = this.filters.supplier_id;
-                if (this.filters.low_stock) params.low_stock = true;
 
-                const { data } = await axios.get<PaginatedResponse<Product>>('/api/products', { params });
+                if (this.filters.search) {
+                    params.search = this.filters.search;
+                }
+
+                if (this.filters.category_id) {
+                    params.category_id = this.filters.category_id;
+                }
+
+                if (this.filters.supplier_id) {
+                    params.supplier_id = this.filters.supplier_id;
+                }
+
+                if (this.filters.low_stock) {
+                    params.low_stock = true;
+                }
+
+                const { data } = await axios.get<PaginatedResponse<Product>>(
+                    '/api/products',
+                    { params },
+                );
                 this.products = data.data;
                 this.currentPage = data.current_page;
                 this.lastPage = data.last_page;
@@ -68,8 +84,11 @@ export const useProductStore = defineStore('products', {
 
         async fetchProduct(id: number) {
             this.loading = true;
+
             try {
-                const { data } = await axios.get<{ data: Product }>(`/api/products/${id}`);
+                const { data } = await axios.get<{ data: Product }>(
+                    `/api/products/${id}`,
+                );
                 this.currentProduct = data.data;
             } finally {
                 this.loading = false;
@@ -77,12 +96,20 @@ export const useProductStore = defineStore('products', {
         },
 
         async createProduct(product: Partial<Product>) {
-            const { data } = await axios.post<{ data: Product }>('/api/products', product);
+            const { data } = await axios.post<{ data: Product }>(
+                '/api/products',
+                product,
+            );
+
             return data.data;
         },
 
         async updateProduct(id: number, product: Partial<Product>) {
-            const { data } = await axios.put<{ data: Product }>(`/api/products/${id}`, product);
+            const { data } = await axios.put<{ data: Product }>(
+                `/api/products/${id}`,
+                product,
+            );
+
             return data.data;
         },
 

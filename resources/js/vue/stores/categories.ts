@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
 import axios from 'axios';
+import { defineStore } from 'pinia';
 import type { Category } from '@/types/inventory';
 
 interface CategoryState {
@@ -16,8 +16,11 @@ export const useCategoryStore = defineStore('categories', {
     actions: {
         async fetchCategories() {
             this.loading = true;
+
             try {
-                const { data } = await axios.get<{ data: Category[] }>('/api/categories');
+                const { data } = await axios.get<{ data: Category[] }>(
+                    '/api/categories',
+                );
                 this.categories = data.data;
             } finally {
                 this.loading = false;
@@ -25,12 +28,20 @@ export const useCategoryStore = defineStore('categories', {
         },
 
         async createCategory(category: Partial<Category>) {
-            const { data } = await axios.post<{ data: Category }>('/api/categories', category);
+            const { data } = await axios.post<{ data: Category }>(
+                '/api/categories',
+                category,
+            );
+
             return data.data;
         },
 
         async updateCategory(id: number, category: Partial<Category>) {
-            const { data } = await axios.put<{ data: Category }>(`/api/categories/${id}`, category);
+            const { data } = await axios.put<{ data: Category }>(
+                `/api/categories/${id}`,
+                category,
+            );
+
             return data.data;
         },
 

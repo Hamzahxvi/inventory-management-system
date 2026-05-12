@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 class DispatchLowStockCheck extends Command
 {
     protected $signature = 'inventory:check-low-stock';
+
     protected $description = 'Dispatch a background job to check for low stock products';
 
     public function handle(): int

@@ -2,28 +2,49 @@
     <div>
         <div class="mb-6">
             <h2 class="text-2xl font-bold">Inventory Dashboard</h2>
-            <p class="text-muted-foreground">Overview of your inventory status</p>
+            <p class="text-muted-foreground">
+                Overview of your inventory status
+            </p>
         </div>
 
-        <div v-if="loading" class="text-center py-12 text-muted-foreground">Loading...</div>
+        <div v-if="loading" class="py-12 text-center text-muted-foreground">
+            Loading...
+        </div>
+
+        <div
+            v-else-if="error"
+            class="rounded-lg border border-destructive/50 bg-card p-4 text-sm text-destructive"
+        >
+            {{ error }}
+        </div>
 
         <template v-else-if="report">
             <div class="mb-6 grid grid-cols-4 gap-4">
                 <div class="rounded-lg border bg-card p-4">
                     <p class="text-sm text-muted-foreground">Total Products</p>
-                    <p class="text-2xl font-bold">{{ report.totals?.total_products ?? 0 }}</p>
+                    <p class="text-2xl font-bold">
+                        {{ report.totals?.total_products ?? 0 }}
+                    </p>
                 </div>
                 <div class="rounded-lg border bg-card p-4">
                     <p class="text-sm text-muted-foreground">Total Stock</p>
-                    <p class="text-2xl font-bold">{{ report.totals?.total_stock ?? 0 }}</p>
+                    <p class="text-2xl font-bold">
+                        {{ report.totals?.total_stock ?? 0 }}
+                    </p>
                 </div>
                 <div class="rounded-lg border bg-card p-4">
                     <p class="text-sm text-muted-foreground">Inventory Value</p>
-                    <p class="text-2xl font-bold">${{ formatNumber(report.totals?.total_value ?? 0) }}</p>
+                    <p class="text-2xl font-bold">
+                        ${{ formatNumber(report.totals?.total_value ?? 0) }}
+                    </p>
                 </div>
-                <div class="rounded-lg border bg-card p-4 border-destructive/50">
+                <div
+                    class="rounded-lg border border-destructive/50 bg-card p-4"
+                >
                     <p class="text-sm text-destructive">Low Stock Items</p>
-                    <p class="text-2xl font-bold text-destructive">{{ report.totals?.low_stock_count ?? 0 }}</p>
+                    <p class="text-2xl font-bold text-destructive">
+                        {{ report.totals?.low_stock_count ?? 0 }}
+                    </p>
                 </div>
             </div>
 
@@ -43,14 +64,32 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="cat in report.by_category" :key="cat.category" class="border-b">
-                                <td class="px-4 py-2 font-medium">{{ cat.category }}</td>
-                                <td class="px-4 py-2 text-right">{{ cat.total_products }}</td>
-                                <td class="px-4 py-2 text-right">{{ cat.total_stock }}</td>
-                                <td class="px-4 py-2 text-right">${{ formatNumber(cat.inventory_value) }}</td>
+                            <tr
+                                v-for="cat in report.by_category"
+                                :key="cat.category"
+                                class="border-b"
+                            >
+                                <td class="px-4 py-2 font-medium">
+                                    {{ cat.category }}
+                                </td>
                                 <td class="px-4 py-2 text-right">
-                                    <span v-if="cat.low_stock_count > 0" class="rounded-full bg-destructive/10 px-2 py-0.5 text-xs text-destructive">{{ cat.low_stock_count }}</span>
-                                    <span v-else class="text-muted-foreground">0</span>
+                                    {{ cat.total_products }}
+                                </td>
+                                <td class="px-4 py-2 text-right">
+                                    {{ cat.total_stock }}
+                                </td>
+                                <td class="px-4 py-2 text-right">
+                                    ${{ formatNumber(cat.inventory_value) }}
+                                </td>
+                                <td class="px-4 py-2 text-right">
+                                    <span
+                                        v-if="cat.low_stock_count > 0"
+                                        class="rounded-full bg-destructive/10 px-2 py-0.5 text-xs text-destructive"
+                                        >{{ cat.low_stock_count }}</span
+                                    >
+                                    <span v-else class="text-muted-foreground"
+                                        >0</span
+                                    >
                                 </td>
                             </tr>
                         </tbody>
@@ -58,27 +97,39 @@
                 </div>
             </div>
         </template>
+
+        <div v-else class="rounded-lg border bg-card p-4 text-muted-foreground">
+            No inventory data is available yet.
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import { onMounted, ref } from 'vue';
 import type { ReportData } from '@/types/inventory';
 
 const report = ref<ReportData | null>(null);
 const loading = ref(true);
+const error = ref<string | null>(null);
 
 onMounted(async () => {
     try {
-        const { data } = await axios.get<ReportData>('/api/reports/inventory-summary');
+        const { data } = await axios.get<ReportData>(
+            '/api/reports/inventory-summary',
+        );
         report.value = data;
+    } catch {
+        error.value = 'Unable to load inventory data. Please refresh the page.';
     } finally {
         loading.value = false;
     }
 });
 
 function formatNumber(n: number | string): string {
-    return Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return Number(n).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
 }
 </script>

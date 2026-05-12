@@ -9,13 +9,13 @@ use App\Http\Controllers\Api\SupplierController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth')->group(function () {
-    Route::apiResource('products', ProductController::class);
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::apiResource('products', ProductController::class)->only(['index', 'show']);
 
     Route::post('products/{product}/movements', [StockMovementController::class, 'store']);
 
-    Route::apiResource('categories', CategoryController::class);
-    Route::apiResource('suppliers', SupplierController::class);
+    Route::apiResource('categories', CategoryController::class)->only(['index', 'show']);
+    Route::apiResource('suppliers', SupplierController::class)->only(['index', 'show']);
 
     Route::get('movements', [StockMovementController::class, 'index']);
 
@@ -26,7 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::get('export/csv', [ExportController::class, 'csv']);
 });
 
-Route::middleware(['auth', RoleMiddleware::class.':admin,manager'])->group(function () {
+Route::middleware(['web', 'auth', RoleMiddleware::class.':admin,manager'])->group(function () {
     Route::post('products', [ProductController::class, 'store']);
     Route::put('products/{product}', [ProductController::class, 'update']);
     Route::delete('products/{product}', [ProductController::class, 'destroy']);

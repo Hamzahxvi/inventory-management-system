@@ -44,9 +44,13 @@ A full-stack inventory management system built with Laravel, Vue, React/Inertia,
 
 ### Installation
 
+- Find your desired location folder
+- Open command prompt in the folder
+- Paste this command
+
 ```bash
-git clone <your-repository-url>
-cd example-app
+git clone https://github.com/Hamzahxvi/inventory-management-system.git
+cd inventory-management-system
 
 composer install
 npm install
